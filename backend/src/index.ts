@@ -3,10 +3,17 @@ import cors from "cors";
 import "dotenv/config";
 import mongoose from "mongoose";
 import myUserRoute from "./routes/MyUserRoutes";
+import { v2 as cloudinary } from "cloudinary";
+
 mongoose.connect(process.env.MONGODB_CONNECTION_STRING as string).then(()=>{
     console.log("Connected to database!")
 })
 
+cloudinary.config({
+    cloud_name: process.env.CLOUDINARY_CLOUD_NAME,
+    api_key: process.env.CLOUDINARY_API_KEY,
+    api_secret: process.env.CLOUDINARY_API_SECRET,
+});
 
 // 新建express服务器
 const app = express();
@@ -14,10 +21,9 @@ const app = express();
 app.use(express.json())
 app.use(cors())
 
-// app收到/test请求返回json对象
-app.get("/test",async (req:Request, res:Response)=>{
-    res.json({message:"Hello!"});
-})
+app.get("/health", async (req: Request, res: Response) => {
+    res.send({ message: "health OK!" });
+});
 
 app.use("/api/my/user", myUserRoute);
 
